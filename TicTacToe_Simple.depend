@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1669231985 source:c:\users\clebson\documents\games\tictactoe_simple\main.cpp
+	<iostream>
+	<conio.h>
+	<time.h>
+	<windows.h>
+
