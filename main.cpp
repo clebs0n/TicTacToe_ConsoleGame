@@ -12,7 +12,7 @@ typedef struct{
 
 COORD cord = {0,0};
 playerCd playerCoord[2];
-int backupX, backupY, whosTurn;
+int backupX, backupY, whosTurn, saved[3][3] = {0}, enter=0;
 
 void gotoxy(int x, int y){
     cord.X = x;
@@ -41,11 +41,6 @@ void printX(int x, int y){
     printf("*  *");
 }
 
-void saveCurrentPosxy(int x, int y){
-    backupX = x;
-    backupY = y;
-}
-
 void clearPlayerTraces(int x, int y){
     for(int i=0; i < 4; i++){
             gotoxy(x,y+i);
@@ -55,7 +50,7 @@ void clearPlayerTraces(int x, int y){
     }
 }
 
-void CheckAndChangePosition(char direction, int player){
+void CheckAndChangePosition(char direction, int player, int isEnter){
     int x=0, y=0;
     x = playerCoord[player].x;
     y = playerCoord[player].y;
@@ -79,30 +74,24 @@ void CheckAndChangePosition(char direction, int player){
     }
 
     if(y > 20 || y < 6){
-        saveCurrentPosxy(playerCoord[player].x, playerCoord[player].y);
-        gotoxy(23, 0);
-        cout << "error";
-        gotoxy(backupX, backupY);
         return;
     }else if(x > 45 || x < 23){
-        saveCurrentPosxy(playerCoord[player].x, playerCoord[player].y);
-        gotoxy(23, 0);
-        cout << "error";
-        gotoxy(backupX, backupY);
         return;
     }
 
-    clearPlayerTraces(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
+    if(isEnter == 0){
+        clearPlayerTraces(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
+    }
 
     playerCoord[player].x = x; playerCoord[player].y = y;
 
     switch(whosTurn){
     case 0:
-        printZero(playerCoord[0].x, playerCoord[0].y);
+        printZero(playerCoord[0].x, playerCoord[0].y); enter = 0;
         break;
 
     case 1:
-        printX(playerCoord[1].x, playerCoord[1].y);
+        printX(playerCoord[1].x, playerCoord[1].y); enter = 0;
         break;
     }
 }
@@ -126,8 +115,13 @@ void drawCanva(){
     }
 }
 
+void saveLocation(int x, int y){
+    saved[(x/23)-1][(y/7)-1] = 1;
+}
+
 int main()
 {
+    int flag = 0;
     char c;
     drawCanva();
     srand((unsigned)time(NULL));
@@ -144,7 +138,14 @@ int main()
     while(1){
         if(_kbhit()){
             c = _getch();
-            CheckAndChangePosition(c, whosTurn);
+            if(c == 13 && saved[(playerCoord[whosTurn].x/23)-1][(playerCoord[whosTurn].y/7)-1] == 0){
+                enter = 1; flag = 1;
+                saveLocation(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
+            }
+            if(flag == 0){
+                CheckAndChangePosition(c, whosTurn, enter);
+            }
+            flag = 0;
         }
     }
     return 0;
