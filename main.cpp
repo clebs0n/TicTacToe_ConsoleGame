@@ -46,6 +46,15 @@ void saveCurrentPosxy(int x, int y){
     backupY = y;
 }
 
+void clearPlayerTraces(int x, int y){
+    for(int i=0; i < 4; i++){
+            gotoxy(x,y+i);
+        for(int j=0; j < 4; j++){
+            cout << " ";
+        }
+    }
+}
+
 void CheckAndChangePosition(char direction, int player){
     int x=0, y=0;
     x = playerCoord[player].x;
@@ -82,6 +91,8 @@ void CheckAndChangePosition(char direction, int player){
         gotoxy(backupX, backupY);
         return;
     }
+
+    clearPlayerTraces(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
 
     playerCoord[player].x = x; playerCoord[player].y = y;
 
