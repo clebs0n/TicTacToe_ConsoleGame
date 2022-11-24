@@ -5,7 +5,14 @@
 
 using namespace std;
 
+typedef struct{
+    int x;
+    int y;
+} playerCd;
+
 COORD cord = {0,0};
+playerCd playerCoord[2];
+int backupX, backupY;
 
 void gotoxy(int x, int y){
     cord.X = x;
@@ -13,21 +20,83 @@ void gotoxy(int x, int y){
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cord);
 }
 
+void printZero(int x, int y){
+    for(int i=0; i < 4; i++){
+        gotoxy(x, y+i);
+        for(int j=0; j < 4; j++){
+            printf("%c", 177);
+        }
+        cout << endl;
+    }
+}
+
+void printX(int x, int y){
+    gotoxy(x, y++);
+    printf("*  *");
+    gotoxy(x, y++);
+    printf(" ** ");
+    gotoxy(x, y++);
+    printf(" ** ");
+    gotoxy(x, y);
+    printf("*  *");
+}
+
+void saveCurrentPosxy(int x, int y){
+    backupX = x;
+    backupY = y;
+}
+
+void CheckAndChangePosition(char direction, int player){
+    int x=0, y=0;
+    x = playerCoord[player].x;
+    y = playerCoord[player].y;
+
+    switch(direction){
+    case 'r' :
+        x += 11;
+        break;
+
+    case 'l' :
+        x -= 11;
+        break;
+
+    case 'u' :
+        y -= 7;
+        break;
+
+    case 'd' :
+        y += 7;
+        break;
+    }
+
+    if(y > 20 || y < 6){
+        saveCurrentPosxy()
+        cout << "error";
+        return;
+    }else if(x > 45 || x < 23){
+        //save
+        cout << "error";
+        return;
+    }
+
+    playerCoord[player].x = x; playerCoord[player].y = y;
+}
+
 void drawCanva(){
     gotoxy(20, 11);
-    for(int i=0; i < 29; i++){
+    for(int i=0; i < 32; i++){
         printf(".");
     }
     gotoxy(20, 18);
-    for(int i=0; i < 29; i++){
+    for(int i=0; i < 32; i++){
         printf(".");
     }
     for(int i=0; i < 20; i++){
-        gotoxy(29, i+5);
+        gotoxy(30, i+5);
         printf(".\n");
     }
     for(int i=0; i < 20; i++){
-        gotoxy(39, i+5);
+        gotoxy(41, i+5);
         printf(".");
     }
 }
@@ -35,6 +104,7 @@ void drawCanva(){
 int main()
 {
     drawCanva();
+    printX(23,6);
     while(1){
         int i;
     }
