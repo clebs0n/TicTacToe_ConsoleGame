@@ -10,9 +10,16 @@ typedef struct{
     int y;
 } playerCd;
 
+typedef struct{
+    int x;
+    int y;
+    int used;
+} saved;
+
 COORD cord = {0,0};
 playerCd playerCoord[2];
-int backupX, backupY, whosTurn, saved[3][3] = {0}, enter=0;
+int backupX, backupY, whosTurn, enter=0, counter=0;
+saved savedPosyx[9];
 
 void gotoxy(int x, int y){
     cord.X = x;
@@ -50,7 +57,7 @@ void clearPlayerTraces(int x, int y){
     }
 }
 
-void CheckAndChangePosition(char direction, int player, int isEnter){
+void CheckAndChangePosition(char direction, int player, int isEnter, int turn){
     int x=0, y=0;
     x = playerCoord[player].x;
     y = playerCoord[player].y;
@@ -80,12 +87,12 @@ void CheckAndChangePosition(char direction, int player, int isEnter){
     }
 
     if(isEnter == 0){
-        clearPlayerTraces(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
+        clearPlayerTraces(playerCoord[turn].x, playerCoord[turn].y);
     }
 
     playerCoord[player].x = x; playerCoord[player].y = y;
 
-    switch(whosTurn){
+    switch(turn){
     case 0:
         printZero(playerCoord[0].x, playerCoord[0].y); enter = 0;
         break;
@@ -116,20 +123,41 @@ void drawCanva(){
 }
 
 void saveLocation(int x, int y){
-    saved[(x/23)-1][(y/7)-1] = 1;
+    savedPosyx[counter].used = 1;
+    savedPosyx[counter].x = x;
+    savedPosyx[counter++].y = y;
+}
+
+int searchIfUsed(int x, int y){
+    for(int i=0; i < counter; i++){
+        if(savedPosyx[i].x == x && savedPosyx[i].y == y && savedPosyx[i].used == 1){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void inherit(int player){
+    if(player == 0){
+        playerCoord[1].x = playerCoord[0].x;
+        playerCoord[1].y = playerCoord[0].y;
+    }else if(player == 1){
+        playerCoord[0].x = playerCoord[1].x;
+        playerCoord[0].y = playerCoord[1].y;
+    }
 }
 
 int main()
 {
-    int flag = 0;
+    int flag = 0, helper;
     char c;
     drawCanva();
     srand((unsigned)time(NULL));
-    whosTurn = (rand() % (1 - 0 + 1)) + 0;
+    helper = (rand() % (1 - 0 + 1)) + 0;
     playerCoord[0].x = 34 ; playerCoord[0].y = 13;
     playerCoord[1].x = 34 ; playerCoord[1].y = 13;
 
-    if(whosTurn == 0){
+    if(helper == 0){
         printZero(playerCoord[0].x, playerCoord[0].y);
     }else{
         printX(playerCoord[1].x, playerCoord[1].y);
@@ -138,12 +166,15 @@ int main()
     while(1){
         if(_kbhit()){
             c = _getch();
-            if(c == 13 && saved[(playerCoord[whosTurn].x/23)-1][(playerCoord[whosTurn].y/7)-1] == 0){
+            if(c == 13 && searchIfUsed(playerCoord[helper].x, playerCoord[helper].y)){
                 enter = 1; flag = 1;
-                saveLocation(playerCoord[whosTurn].x, playerCoord[whosTurn].y);
+                inherit(helper);
+                if(helper == 1){helper = 0;}
+                else if(helper == 0){helper = 1;}
+                saveLocation(playerCoord[helper].x, playerCoord[helper].y);
             }
             if(flag == 0){
-                CheckAndChangePosition(c, whosTurn, enter);
+                CheckAndChangePosition(c, helper, enter, helper);
             }
             flag = 0;
         }
