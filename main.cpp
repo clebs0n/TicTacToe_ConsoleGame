@@ -12,7 +12,7 @@ typedef struct{
 
 COORD cord = {0,0};
 playerCd playerCoord[2];
-int backupX, backupY;
+int backupX, backupY, whosTurn;
 
 void gotoxy(int x, int y){
     cord.X = x;
@@ -52,19 +52,19 @@ void CheckAndChangePosition(char direction, int player){
     y = playerCoord[player].y;
 
     switch(direction){
-    case 'r' :
+    case 'd' :
         x += 11;
         break;
 
-    case 'l' :
+    case 'a' :
         x -= 11;
         break;
 
-    case 'u' :
+    case 'w' :
         y -= 7;
         break;
 
-    case 'd' :
+    case 's' :
         y += 7;
         break;
     }
@@ -84,6 +84,16 @@ void CheckAndChangePosition(char direction, int player){
     }
 
     playerCoord[player].x = x; playerCoord[player].y = y;
+
+    switch(whosTurn){
+    case 0:
+        printZero(playerCoord[0].x, playerCoord[0].y);
+        break;
+
+    case 1:
+        printX(playerCoord[1].x, playerCoord[1].y);
+        break;
+    }
 }
 
 void drawCanva(){
@@ -110,11 +120,20 @@ int main()
     char c;
     drawCanva();
     srand((unsigned)time(NULL));
+    whosTurn = (rand() % (1 - 0 + 1)) + 0;
+    playerCoord[0].x = 34 ; playerCoord[0].y = 13;
+    playerCoord[1].x = 34 ; playerCoord[1].y = 13;
+
+    if(whosTurn == 0){
+        printZero(playerCoord[0].x, playerCoord[0].y);
+    }else{
+        printX(playerCoord[1].x, playerCoord[1].y);
+    }
 
     while(1){
         if(_kbhit()){
             c = _getch();
-            CheckAndChangePosition(c, 0);
+            CheckAndChangePosition(c, whosTurn);
         }
     }
     return 0;
