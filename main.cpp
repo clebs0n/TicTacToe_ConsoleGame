@@ -70,12 +70,16 @@ void CheckAndChangePosition(char direction, int player){
     }
 
     if(y > 20 || y < 6){
-        saveCurrentPosxy()
+        saveCurrentPosxy(playerCoord[player].x, playerCoord[player].y);
+        gotoxy(23, 0);
         cout << "error";
+        gotoxy(backupX, backupY);
         return;
     }else if(x > 45 || x < 23){
-        //save
+        saveCurrentPosxy(playerCoord[player].x, playerCoord[player].y);
+        gotoxy(23, 0);
         cout << "error";
+        gotoxy(backupX, backupY);
         return;
     }
 
@@ -103,10 +107,15 @@ void drawCanva(){
 
 int main()
 {
+    char c;
     drawCanva();
-    printX(23,6);
+    srand((unsigned)time(NULL));
+
     while(1){
-        int i;
+        if(_kbhit()){
+            c = _getch();
+            CheckAndChangePosition(c, 0);
+        }
     }
     return 0;
 }
