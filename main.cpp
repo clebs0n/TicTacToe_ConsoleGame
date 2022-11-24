@@ -48,16 +48,7 @@ void printX(int x, int y){
     printf("*  *");
 }
 
-void clearPlayerTraces(int x, int y){
-    for(int i=0; i < 4; i++){
-            gotoxy(x,y+i);
-        for(int j=0; j < 4; j++){
-            cout << " ";
-        }
-    }
-}
-
-void CheckAndChangePosition(char direction, int player, int isEnter, int turn){
+void CheckAndChangePosition(char direction, int player, int isEnter){
     int x=0, y=0;
     x = playerCoord[player].x;
     y = playerCoord[player].y;
@@ -86,20 +77,23 @@ void CheckAndChangePosition(char direction, int player, int isEnter, int turn){
         return;
     }
 
-    if(isEnter == 0){
-        clearPlayerTraces(playerCoord[turn].x, playerCoord[turn].y);
-    }
-
+    gotoxy((playerCoord[player].x) - 2, (playerCoord[player].y) - 1);
+    cout << " ";
     playerCoord[player].x = x; playerCoord[player].y = y;
+    gotoxy((playerCoord[player].x) - 2, (playerCoord[player].y) - 1);
+    cout << ".";
 
-    switch(turn){
-    case 0:
-        printZero(playerCoord[0].x, playerCoord[0].y); enter = 0;
-        break;
 
-    case 1:
-        printX(playerCoord[1].x, playerCoord[1].y); enter = 0;
-        break;
+    if(isEnter == 1){
+        switch(player){
+        case 0:
+            printZero(playerCoord[0].x, playerCoord[0].y); enter  = 0;
+            break;
+
+        case 1:
+            printX(playerCoord[1].x, playerCoord[1].y); enter = 0;
+            break;
+        }
     }
 }
 
@@ -157,11 +151,8 @@ int main()
     playerCoord[0].x = 34 ; playerCoord[0].y = 13;
     playerCoord[1].x = 34 ; playerCoord[1].y = 13;
 
-    if(helper == 0){
-        printZero(playerCoord[0].x, playerCoord[0].y);
-    }else{
-        printX(playerCoord[1].x, playerCoord[1].y);
-    }
+    gotoxy(32, 12);
+    cout << ".";
 
     while(1){
         if(_kbhit()){
@@ -173,10 +164,9 @@ int main()
                 else if(helper == 0){helper = 1;}
                 saveLocation(playerCoord[helper].x, playerCoord[helper].y);
             }
-            if(flag == 0){
-                CheckAndChangePosition(c, helper, enter, helper);
-            }
-            flag = 0;
+
+            CheckAndChangePosition(c, helper, enter);
+
         }
     }
     return 0;
