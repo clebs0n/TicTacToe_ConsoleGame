@@ -14,6 +14,7 @@ typedef struct{
     int x;
     int y;
     int used;
+    int player;
 } saved;
 
 COORD cord = {0,0};
@@ -116,10 +117,11 @@ void drawCanva(){
     }
 }
 
-void saveLocation(int x, int y){
+void saveLocation(int x, int y, int turn){
     savedPosyx[counter].used = 1;
     savedPosyx[counter].x = x;
-    savedPosyx[counter++].y = y;
+    savedPosyx[counter].y = y;
+    savedPosyx[counter++].player = turn;
 }
 
 int searchIfUsed(int x, int y){
@@ -141,9 +143,58 @@ void inherit(int player){
     }
 }
 
+void checkWinner(int turn){
+    int addX = 0, addY, i=0, j=0, values[2][3] = {{23, 34, 45}, {6, 13, 20}}, diag_1 = 0, diag_2=0;
+    playerCd checking[5];
+    for( i=0, j=0; i < counter; i++){
+        if(savedPosyx[turn].player == turn){
+            checking[j].x = savedPosyx[j].x;
+            checking[j].y = savedPosyx[j].y;
+            j++;
+        }
+    }
+
+
+    for(int k=0; k < 3; k++){
+        for(int f=0; f < j; f++){
+            if(checking[f].x == values[0][k]){
+                addX++;
+            }
+            if(checking[f].y == values[1][k]){
+                addY++;
+            }
+
+            if((checking[f].x == 23 && checking[f].y == 6) ||
+            (checking[f].x == 34 && checking[f].y == 13) || (checking[f].x == 45
+            && checking[f].y == 20)){
+                diag_1++;
+            }
+
+            if((checking[f].x == 45 && checking[f].y == 6) ||
+            (checking[f].x == 34 && checking[f].y == 13) || (checking[f].x == 23
+            && checking[f].y == 20)){
+                diag_2++;
+            }
+
+        }
+        if(addX >= 3 || addY >= 3 || diag_1 >= 3 || diag_2 >= 3){
+            gotoxy(0,0);
+            cout << "player ";
+            if(turn ==0){
+                cout << "2";
+            }else{
+                cout << "1";
+            }
+            cout << " wins!";
+            exit(0);
+        }
+    }
+
+}
+
 int main()
 {
-    int flag = 0, helper;
+    int flag = 0, helper, inc=0;
     char c;
     drawCanva();
     srand((unsigned)time(NULL));
@@ -158,11 +209,19 @@ int main()
         if(_kbhit()){
             c = _getch();
             if(c == 13 && searchIfUsed(playerCoord[helper].x, playerCoord[helper].y)){
-                enter = 1; flag = 1;
+                enter = 1;
                 inherit(helper);
                 if(helper == 1){helper = 0;}
                 else if(helper == 0){helper = 1;}
-                saveLocation(playerCoord[helper].x, playerCoord[helper].y);
+                saveLocation(playerCoord[helper].x, playerCoord[helper].y, helper);
+
+                if(counter >= 5){
+                    checkWinner(helper);
+                }
+
+                if(counter == 9){
+                    exit(0);
+                }
             }
 
             CheckAndChangePosition(c, helper, enter);
