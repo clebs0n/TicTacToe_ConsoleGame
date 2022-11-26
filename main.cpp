@@ -118,10 +118,12 @@ void drawCanva(){
 }
 
 void saveLocation(int x, int y, int turn){
+    int who = turn, hell = counter;
     savedPosyx[counter].used = 1;
     savedPosyx[counter].x = x;
     savedPosyx[counter].y = y;
-    savedPosyx[counter++].player = turn;
+    savedPosyx[counter].player = turn;
+    counter++;
 }
 
 int searchIfUsed(int x, int y){
@@ -144,10 +146,10 @@ void inherit(int player){
 }
 
 void checkWinner(int turn){
-    int addX = 0, addY, i=0, j=0, values[2][3] = {{23, 34, 45}, {6, 13, 20}}, diag_1 = 0, diag_2=0;
+    int addX = 0, addY=0, i=0, j=0, values[2][3] = {{23, 34, 45}, {6, 13, 20}}, diag_1 = 0, diag_2=0;
     playerCd checking[5];
     for( i=0, j=0; i < counter; i++){
-        if(savedPosyx[turn].player == turn){
+        if(savedPosyx[i].player == turn){
             checking[j].x = savedPosyx[j].x;
             checking[j].y = savedPosyx[j].y;
             j++;
@@ -210,14 +212,13 @@ int main()
             c = _getch();
             if(c == 13 && searchIfUsed(playerCoord[helper].x, playerCoord[helper].y)){
                 enter = 1;
-                inherit(helper);
-                if(helper == 1){helper = 0;}
-                else if(helper == 0){helper = 1;}
                 saveLocation(playerCoord[helper].x, playerCoord[helper].y, helper);
-
                 if(counter >= 5){
                     checkWinner(helper);
                 }
+                inherit(helper);
+                if(helper == 1){helper = 0;}
+                else if(helper == 0){helper = 1;}
 
                 if(counter == 9){
                     exit(0);
