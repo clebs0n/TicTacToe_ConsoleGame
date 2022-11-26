@@ -54,6 +54,7 @@ void CheckAndChangePosition(char direction, int player, int isEnter){
     x = playerCoord[player].x;
     y = playerCoord[player].y;
 
+    // atualiza a direção a maneira que vou apertando as teclas
     switch(direction){
     case 'd' :
         x += 11;
@@ -78,17 +79,18 @@ void CheckAndChangePosition(char direction, int player, int isEnter){
         return;
     }
 
+    // apaga os pontos a maneira que eu for movendo
     gotoxy((playerCoord[player].x) - 2, (playerCoord[player].y) - 1);
     cout << " ";
     playerCoord[player].x = x; playerCoord[player].y = y;
     gotoxy((playerCoord[player].x) - 2, (playerCoord[player].y) - 1);
     cout << ".";
 
-
+    // se enter tiver sido pressionado, desenho, se não, to so movendo
     if(isEnter == 1){
         switch(player){
         case 0:
-            printZero(playerCoord[0].x, playerCoord[0].y); enter  = 0;
+            printZero(playerCoord[0].x, playerCoord[0].y); enter = 0;
             break;
 
         case 1:
@@ -118,7 +120,6 @@ void drawCanva(){
 }
 
 void saveLocation(int x, int y, int turn){
-    int who = turn, hell = counter;
     savedPosyx[counter].used = 1;
     savedPosyx[counter].x = x;
     savedPosyx[counter].y = y;
@@ -135,6 +136,8 @@ int searchIfUsed(int x, int y){
     return 1;
 }
 
+// sempre que eu add em algum lugar, o outro player 2 move a partir
+// das coordenadas do player 1
 void inherit(int player){
     if(player == 0){
         playerCoord[1].x = playerCoord[0].x;
@@ -147,11 +150,11 @@ void inherit(int player){
 
 void checkWinner(int turn){
     int addX = 0, addY=0, i=0, j=0, values[2][3] = {{23, 34, 45}, {6, 13, 20}}, diag_1 = 0, diag_2=0;
-    playerCd checking[5];
+    playerCd checking[10];
     for( i=0, j=0; i < counter; i++){
         if(savedPosyx[i].player == turn){
-            checking[j].x = savedPosyx[j].x;
-            checking[j].y = savedPosyx[j].y;
+            checking[j].x = savedPosyx[i].x;
+            checking[j].y = savedPosyx[i].y;
             j++;
         }
     }
@@ -180,16 +183,20 @@ void checkWinner(int turn){
 
         }
         if(addX >= 3 || addY >= 3 || diag_1 >= 3 || diag_2 >= 3){
+
+            CheckAndChangePosition(34, turn, 1);
             gotoxy(0,0);
             cout << "player ";
-            if(turn ==0){
+            if(turn == 1){
                 cout << "2";
             }else{
                 cout << "1";
             }
             cout << " wins!";
+            Sleep(3000);
             exit(0);
         }
+        diag_1 = 0; diag_2 = 0; addX = 0; addY = 0;
     }
 
 }
@@ -204,6 +211,9 @@ int main()
     playerCoord[0].x = 34 ; playerCoord[0].y = 13;
     playerCoord[1].x = 34 ; playerCoord[1].y = 13;
 
+    gotoxy(80, 24);
+    cout << helper + 1;
+
     gotoxy(32, 12);
     cout << ".";
 
@@ -217,16 +227,19 @@ int main()
                     checkWinner(helper);
                 }
                 inherit(helper);
+                CheckAndChangePosition(c, helper, enter);
                 if(helper == 1){helper = 0;}
                 else if(helper == 0){helper = 1;}
-
-                if(counter == 9){
-                    exit(0);
-                }
             }
 
             CheckAndChangePosition(c, helper, enter);
 
+            if(counter == 9){
+                    gotoxy(0,0);
+                    cout << "draw!";
+                    Sleep(3000);
+                    exit(0);
+                }
         }
     }
     return 0;
